@@ -9,6 +9,7 @@ use Facades\App\Clients\ClientFactory;
 use App\Retailer;
 use App\Stock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
 use RetailerWithProduct;
 use Tests\TestCase;
 
@@ -37,13 +38,11 @@ class StockTest extends TestCase
     {
         $this->seed(RetailerWithProduct::class);
 
-        ClientFactory::shouldReceive('make')->andReturn(new class implements Client {
-                public function checkAvailability(Stock $stock): StockStatus
-                {
-                    return new StockStatus($available = true, $price = 1000);
-                }
-            }
-        );
+        $clientMock = Mockery::mock(Client::class);
+        $clientMock->shouldReceive('checkAvailability')
+            ->andReturn(new StockStatus($available = true, $price = 1000));
+
+        ClientFactory::shouldReceive('make')->andReturn($clientMock);
 
         $stock = tap(Stock::first())->track();
         $this->assertTrue($stock->in_stock);
