@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class Stock extends Model
 {
@@ -15,14 +15,14 @@ class Stock extends Model
 
     public function track()
     {
-        if ($this->retailer->name === 'Best Buy') {
-            $results = Http::get('http://foo.com')->json();
+        $class = "App\\Clients\\" . Str::studly($this->retailer->name);
 
-            $this->update([
-                'in_stock' => $results['available'],
-                'price' => $results['price']
-            ]);
-        }
+        $status = (new $class)->checkAvailability($this);
+
+        $this->update([
+            'in_stock' => $status->available,
+            'price' => $status->price
+        ]);
     }
 
     public function retailer()
