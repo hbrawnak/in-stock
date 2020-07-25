@@ -8,6 +8,7 @@ use App\Stock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Http;
+use RetailerWithProduct;
 use Tests\TestCase;
 
 class TrackCommandTest extends TestCase
@@ -20,29 +21,15 @@ class TrackCommandTest extends TestCase
      */
     function it_tracks_product_stock()
     {
-        $switch = Product::create(['name' => 'Nintendo Switch']);
+        $this->seed(RetailerWithProduct::class);
 
-        $bestBuy = Retailer::create(['name' => 'Best Buy']);
+        $this->assertFalse(Product::first()->inStock());
 
-        $this->assertFalse($switch->inStock());
+        Http::fake(fn() => ['available' => true, 'price' => 1000]);
 
-        $stock = new Stock([
-            'price' => 1000,
-            'url' => 'http://foo.com',
-            'sku' => '12345',
-            'in_stock' => false
-        ]);
+        $this->artisan('track')
+            ->expectsOutput('All Done');
 
-        $bestBuy->addStock($switch, $stock);
-
-        $this->assertFalse($stock->fresh()->in_stock);
-
-        Http::fake(function () {
-            return ['available' => true, 'price' => 1000];
-        });
-
-        $this->artisan('track');
-
-        $this->assertTrue($stock->fresh()->in_stock);
+        $this->assertTrue(Product::first()->inStock());
     }
 }
