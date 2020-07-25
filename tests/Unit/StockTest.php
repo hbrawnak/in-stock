@@ -38,10 +38,6 @@ class StockTest extends TestCase
     {
         $this->seed(RetailerWithProduct::class);
 
-//        $clientMock = Mockery::mock(Client::class);
-//        $clientMock->shouldReceive('checkAvailability')
-//            ->andReturn(new StockStatus($available = true, $price = 1000));
-
         ClientFactory::shouldReceive('make->checkAvailability')->andReturn(
             new StockStatus($available = true, $price = 1000)
         );
