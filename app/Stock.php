@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Clients\ClientFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Stock extends Model
@@ -15,8 +14,7 @@ class Stock extends Model
 
     public function track()
     {
-        $status = (new ClientFactory)->make($this->retailer)
-            ->checkAvailability($this);
+        $status = $this->retailer->client()->checkAvailability($this);
 
         $this->update([
             'in_stock' => $status->available,
