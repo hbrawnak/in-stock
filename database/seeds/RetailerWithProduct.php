@@ -3,6 +3,7 @@
 use App\Product;
 use App\Retailer;
 use App\Stock;
+use App\User;
 use Illuminate\Database\Seeder;
 
 class RetailerWithProduct extends Seeder
@@ -26,5 +27,7 @@ class RetailerWithProduct extends Seeder
         ]);
 
         $bestBuy->addStock($switch, $stock);
+
+        factory(User::class)->create(['email' => 'habib@example.com']);
     }
 }

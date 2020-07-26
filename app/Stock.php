@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Events\NowInStock;
 use Illuminate\Database\Eloquent\Model;
 
 class Stock extends Model
@@ -15,6 +16,10 @@ class Stock extends Model
     public function track($callback = null)
     {
         $status = $this->retailer->client()->checkAvailability($this);
+
+        if (!$this->in_stock && $status->available) {
+            event(new NowInStock($this));
+        }
 
         $this->update([
             'in_stock' => $status->available,

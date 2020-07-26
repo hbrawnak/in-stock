@@ -38,12 +38,10 @@ class StockTest extends TestCase
     {
         $this->seed(RetailerWithProduct::class);
 
-        ClientFactory::shouldReceive('make->checkAvailability')->andReturn(
-            new StockStatus($available = true, $price = 1000)
-        );
+        $this->mockClientRequest($available = true, $price = 9900);
 
         $stock = tap(Stock::first())->track();
         $this->assertTrue($stock->in_stock);
-        $this->assertEquals(1000, $stock->price);
+        $this->assertEquals(9900, $stock->price);
     }
 }
