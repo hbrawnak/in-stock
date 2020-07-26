@@ -24,7 +24,6 @@ class TrackCommandTest extends TestCase
             ->andReturn(new StockStatus($available = true, $price = 1000));
 
         $this->artisan('track');
-            //->expectsOutput('All done!');
 
         $this->assertTrue(Product::first()->inStock());
     }
