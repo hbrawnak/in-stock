@@ -38,12 +38,21 @@ class TrackCommand extends Command
         $this->results();
     }
 
-    protected function results()
+    protected function results(): void
     {
         $this->output->progressFinish();
-        $data = Product::leftJoin('stock', 'stock.product_id', '=', 'products.id')
-            ->get(['name', 'price', 'url', 'in_stock']);
+        $data = Product::query()
+            ->leftJoin('stock', 'stock.product_id', '=', 'products.id')
+            ->get($this->keys());
 
-        $this->table(['name', 'price', 'url', 'in_stock'], $data);
+        $this->table(
+            array_map('ucwords', $this->keys()),
+            $data
+        );
+    }
+
+    protected function keys(): array
+    {
+        return ['name', 'price', 'url', 'in_stock'];
     }
 }
