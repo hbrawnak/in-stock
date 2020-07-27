@@ -5,14 +5,18 @@ namespace App\UseCases;
 
 
 use App\Clients\StockStatus;
-use App\Events\NowInStock;
 use App\History;
 use App\Notifications\ImportantStockUpdate;
 use App\Stock;
 use App\User;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
-class TrackStock
+class TrackStock implements ShouldQueue
 {
+    use Dispatchable, SerializesModels;
+
     protected Stock $stock;
     protected StockStatus $stockStatus;
 
