@@ -38,7 +38,7 @@ class TrackStock
 
     protected function notifyUser()
     {
-        if (!$this->stock->in_stock && $this->stockStatus->available) {
+        if ($this->isNowInStock()) {
             User::first()->notify(new ImportantStockUpdate($this->stock));
         }
     }
@@ -59,6 +59,11 @@ class TrackStock
             'product_id' => $this->stock->product_id,
             'stock_id' => $this->stock->id
         ]);
+    }
+
+    protected function isNowInStock(): bool
+    {
+        return !$this->stock->in_stock && $this->stockStatus->available;
     }
 
 }
